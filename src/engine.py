@@ -1,6 +1,7 @@
 import pandas as pd
 from portfolio import Portfolio
 from strategy import Strategy
+import numpy as np
 
 class Engine: 
     df: pd.DataFrame
@@ -45,4 +46,20 @@ class Engine:
                     self.pnl_list.append((pnl, row['pos']))
                 else: 
                     pass
+
+        # at the end of the run function call the output function which will output all the things 
+        self.output()
     
+    def output(self): 
+        np.set_printoptions(legacy='1.25')
+
+        print("equity curve")
+        for item in self.portfolio.equity_curve: 
+            print(item)
+        print("trade log")
+        for item in self.trade_log: 
+            print(item)
+        print(f"cash {self.portfolio.cash}")
+        print(f"equity {self.portfolio.equity}")
+        print(f"shares {self.portfolio.shares}")
+        print(f"pnl {self.portfolio.pnl}")
