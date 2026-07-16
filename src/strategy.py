@@ -5,6 +5,8 @@ class Strategy:
         pass
 
     def generate_signal(self, df: pd.DataFrame) -> str: 
+        # This is the strategy I created in my previous project. This is not a good strategy, this is a very rudimentary and conservative strategy. 
+
         # macd and signal line
         # if macd is above signal line
         higher_macd: int = 1 if df['MACD'].iloc[-1] >= df['Signal Line'].iloc[-1] else -1 # not sure what to do with this right now
