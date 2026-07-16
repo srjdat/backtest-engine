@@ -1,5 +1,6 @@
 import pandas as pd
 from portfolio import Portfolio
+from strategy import Strategy
 
 class Engine: 
     df: pd.DataFrame
@@ -8,7 +9,7 @@ class Engine:
     pnl_list: list
     data_so_far: pd.DataFrame
 
-    def __init__(self, df: pd.DataFrame, strategy, portfolio: Portfolio) -> None:
+    def __init__(self, df: pd.DataFrame, strategy: Strategy, portfolio: Portfolio) -> None:
         self.df = df
         self.strategy = strategy
         self.portfolio = portfolio

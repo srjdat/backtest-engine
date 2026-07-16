@@ -3,6 +3,9 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import ta 
+from engine import Engine
+from strategy import Strategy
+from portfolio import Portfolio
 
 ticker = 'AAPL'
 start_date = '2014-08-28'
@@ -97,3 +100,7 @@ df['one_year_window'] = (df['Close'] - df['Close'].shift(252)) / df['Close'].shi
 
 # make df only from start date to end date
 df = df.iloc[250:len(df)]
+
+s1 = Strategy()
+p1 = Portfolio(15000)
+e1 = Engine(df=df, strategy=s1, portfolio=p1)
