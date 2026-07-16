@@ -2,11 +2,9 @@ import datetime
 import yfinance as yf
 import pandas as pd
 import numpy as np
-import ta 
 from engine import Engine
 from strategy import Strategy
 from portfolio import Portfolio
-from test import Test
 
 ticker = 'AAPL'
 start_date = '2014-08-28'
