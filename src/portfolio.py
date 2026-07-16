@@ -39,3 +39,4 @@ class Portfolio:
     def mark_to_market(self, current_price, pos): 
         self.equity = self.cash + (self.shares * current_price) # recalculate equity every day
         self.equity_curve.append((pos, self.equity))
+        print(f"cash: {self.cash} equity {self.equity} \nequity curve {self.equity_curve}")

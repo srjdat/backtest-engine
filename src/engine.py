@@ -22,7 +22,7 @@ class Engine:
             self.portfolio.mark_to_market(current_price=row['Close'], pos=row['pos'])
 
             # add onto data so far 
-            self.data_so_far = self.df[0: row['pos'] + 1]
+            self.data_so_far = self.df[0: (int)(row['pos'] + 1)] # have to turn row['pos'] + 1 into an int because it is a float here
             self.data_so_far = self.data_so_far.drop('Tomorrow Open', axis=1)
 
             # call the strategy to receive the signal

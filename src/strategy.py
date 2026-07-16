@@ -114,13 +114,6 @@ class Strategy:
         context_group_score = weighted_52_week_value
 
         overall_score = (trend_score_group * (1/3)) + (momentum_group_score * (1/3)) + (context_group_score * (1/3))
-        print(f"one day return: {round(df['one_day_window'].iloc[-1], 4)}")
-        print(f"one week return: {round(df['one_week_window'].iloc[-1], 4)}")
-        print(f"one month return: {round(df['one_month_window'].iloc[-1], 4)}")
-        print(f"three month return: {round(df['three_month_window'].iloc[-1], 4)}")
-        print(f"six month return: {round(df['six_month_window'].iloc[-1], 4)}")
-        print(f"one year return: {round(df['one_year_window'].iloc[-1], 4)}")
-        print(f"overall score {round(overall_score, 4)}")
 
         threshold = .25
         if overall_score > threshold: 

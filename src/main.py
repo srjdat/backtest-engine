@@ -6,6 +6,7 @@ import ta
 from engine import Engine
 from strategy import Strategy
 from portfolio import Portfolio
+from test import Test
 
 ticker = 'AAPL'
 start_date = '2014-08-28'
@@ -104,3 +105,4 @@ df = df.iloc[250:len(df)]
 s1 = Strategy()
 p1 = Portfolio(15000)
 e1 = Engine(df=df, strategy=s1, portfolio=p1)
+e1.run()
