@@ -18,7 +18,8 @@ class Portfolio:
     def buy(self, entry_price, shares) -> int: 
         self.entry_price = entry_price
 
-        # check if we bought more than we can afford
+        # this isn't technically necessary because i will code how many shares to buy in the strategies
+        # but i will keep this here as a last line of defense is somehow that calculation is wrong
         if entry_price * shares > self.cash: 
             shares = math.floor(self.cash / entry_price) # change shares to how much we can afford
             self.shares += shares # add it to our share count
@@ -43,9 +44,3 @@ class Portfolio:
     def mark_to_market(self, current_price, pos): 
         self.equity = self.cash + (self.shares * current_price) # recalculate equity every day
         self.equity_curve.append((pos, self.equity))
-
-    def get_shares(self) -> int: 
-        return self.shares
-    
-    def get_cash(self) -> float: 
-        return self.cash
