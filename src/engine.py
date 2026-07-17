@@ -1,8 +1,7 @@
 import pandas as pd
 from portfolio import Portfolio
-from strategy import Strategy
+from strategy.strategy import Strategy
 import numpy as np
-import datetime
 
 class Engine: 
     df: pd.DataFrame
@@ -27,9 +26,12 @@ class Engine:
             self.data_so_far = self.df[0: int(row['pos']) + 1] # have to turn row['pos'] + 1 into an int because it is a float here
             self.data_so_far = self.data_so_far.drop('Tomorrow Open', axis=1)
 
+            # get how many shares i want to trade with 
+
+
             # call the strategy to receive the signal
             signal = self.strategy.generate_signal(self.data_so_far)
-            if signal == "buy" and self.portfolio.shares == 0: 
+            if signal == "buy": 
                 # we send up until today's close price to get a signal and if it's a buy signal we buy when the market opens tomorrow hence row['Open']
                 if not pd.isna(row['Tomorrow Open']):
                     entry_price = row['Tomorrow Open'] # get tomorrow's open to buy
@@ -41,9 +43,12 @@ class Engine:
             elif signal == "sell" and self.portfolio.shares > 0: 
                 # today after the market closes we get a signal based on everything so far. so when we eventually sell it's going to be tomorrow's open price that we sell at
                 if not pd.isna(row['Tomorrow Open']): 
+                    # how many shares we're selling 
+                    sell_shares = max(1, int(self.portfolio.shares * .8)) # current 80 percent will make something better (risk management)
+
                     exit_price = row['Tomorrow Open'] # get tomorrow open to sell it at
-                    self.trade_log.append((exit_price, self.portfolio.shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell
-                    pnl = self.portfolio.sell(exit_price=exit_price)
+                    self.trade_log.append((exit_price, sell_shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell
+                    pnl = self.portfolio.sell(exit_price=exit_price, shares=sell_shares)
                     self.pnl_list.append((pnl, row['pos']))
                 else: 
                     pass
@@ -54,12 +59,10 @@ class Engine:
     def output(self): 
         np.set_printoptions(legacy='1.25') # so it outputs the float instead of np.float64(x)
 
-        print("equity curve")
-        for item in self.portfolio.equity_curve: 
-            print(item)
         print("trade log")
         for item in self.trade_log: 
             print(item)
+            # print(f"shares {self.portfolio.shares} cash {self.portfolio.cash}")
         print(f"cash {round(self.portfolio.cash, 4)}")
         print(f"equity {round (self.portfolio.equity, 4)}")
         print(f"shares {round(self.portfolio.shares, 4)}")

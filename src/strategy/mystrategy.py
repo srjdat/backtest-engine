@@ -1,10 +1,12 @@
-import pandas as pd
+from pandas import DataFrame
 
-class Strategy: 
+from strategy.strategy import Strategy
+
+class MyStrategy(Strategy): 
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
-    def generate_signal(self, df: pd.DataFrame) -> str: 
+    def generate_signal(self, df: DataFrame) -> str:
         # This is the strategy I created in my previous project. This is not a good strategy, this is a very rudimentary and conservative strategy. 
 
         # macd and signal line
@@ -124,3 +126,5 @@ class Strategy:
             return "sell"
         else: 
             return "hold"
+
+    

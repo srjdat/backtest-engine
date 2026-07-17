@@ -20,19 +20,23 @@ class Portfolio:
 
         # check if we bought more than we can afford
         if entry_price * shares > self.cash: 
-            self.shares = math.floor(self.cash / entry_price)
+            shares = math.floor(self.cash / entry_price)
+            self.shares += math.floor(self.cash / entry_price)
         else: 
-            self.shares = shares
+            self.shares += shares
 
         # calculate how much cash you lose 
-        self.cash -= (self.shares * self.entry_price)
+        self.cash -= (shares * entry_price)
 
-    def sell(self, exit_price: float) -> float: 
-        self.cash += (exit_price * self.shares) 
-        trade_pnl = (self.shares * exit_price) - (self.shares * self.entry_price) # type: ignore
+        return 
+
+    def sell(self, exit_price: float, shares) -> float: 
+        self.cash += (exit_price * shares) 
+        trade_pnl = (shares * exit_price) - (shares * self.entry_price) # type: ignore
         self.pnl += trade_pnl
-        self.entry_price = None
-        self.shares = 0
+        self.shares -= shares
+        if self.shares == 0: # do this after shares have been subtracted to see if all shares are sold or not
+            self.entry_price = None
 
         return trade_pnl
     
