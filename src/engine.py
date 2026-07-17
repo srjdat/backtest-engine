@@ -2,6 +2,7 @@ import pandas as pd
 from portfolio import Portfolio
 from strategy import Strategy
 import numpy as np
+import datetime
 
 class Engine: 
     df: pd.DataFrame
@@ -20,7 +21,7 @@ class Engine:
     def run(self): 
         for index, row in self.df.iterrows(): 
             # have to call mark to market every day
-            self.portfolio.mark_to_market(current_price=row['Close'], pos=row['pos'])
+            self.portfolio.mark_to_market(current_price=row['Close'], pos=index.strftime('%Y-%m-%d')) # type: ignore
 
             # add onto data so far 
             self.data_so_far = self.df[0: int(row['pos']) + 1] # have to turn row['pos'] + 1 into an int because it is a float here
@@ -34,14 +35,14 @@ class Engine:
                     entry_price = row['Tomorrow Open'] # get tomorrow's open to buy
                     shares = 10 # currently 10 only, will change it later 
                     self.portfolio.buy(entry_price=entry_price, shares=shares) 
-                    self.trade_log.append((entry_price, shares, "buy", row['pos'])) # add to log as buy
+                    self.trade_log.append((entry_price, shares, "buy", index.strftime('%Y-%m-%d'))) # type: ignore #  add to log as buy
                 else:
                     pass
             elif signal == "sell" and self.portfolio.shares > 0: 
                 # today after the market closes we get a signal based on everything so far. so when we eventually sell it's going to be tomorrow's open price that we sell at
                 if not pd.isna(row['Tomorrow Open']): 
                     exit_price = row['Tomorrow Open'] # get tomorrow open to sell it at
-                    self.trade_log.append((exit_price, self.portfolio.shares, "sell", row['pos'])) # add to log as sell
+                    self.trade_log.append((exit_price, self.portfolio.shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell
                     pnl = self.portfolio.sell(exit_price=exit_price)
                     self.pnl_list.append((pnl, row['pos']))
                 else: 
@@ -59,7 +60,7 @@ class Engine:
         print("trade log")
         for item in self.trade_log: 
             print(item)
-        print(f"cash {self.portfolio.cash}")
-        print(f"equity {self.portfolio.equity}")
-        print(f"shares {self.portfolio.shares}")
-        print(f"pnl {self.portfolio.pnl}")
+        print(f"cash {round(self.portfolio.cash, 4)}")
+        print(f"equity {round (self.portfolio.equity, 4)}")
+        print(f"shares {round(self.portfolio.shares, 4)}")
+        print(f"pnl {round(self.portfolio.pnl, 4)}")
