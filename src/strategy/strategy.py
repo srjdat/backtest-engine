@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 
-class Strategy: 
+class Strategy(ABC): 
     @abstractmethod
     def __init__(self) -> None:
         pass

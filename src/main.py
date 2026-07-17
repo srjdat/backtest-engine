@@ -11,7 +11,7 @@ from strategy.sma_crossover import SMA_Crossover
 
 
 ticker = 'AAPL'
-start_date = '2013-08-28'
+start_date = '2023-08-28'
 end_date = '2026-06-14'
 
 # start from a year back so we can have 52 week high low and other stuff already loaded in
