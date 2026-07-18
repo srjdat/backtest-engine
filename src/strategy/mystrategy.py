@@ -126,5 +126,3 @@ class MyStrategy(Strategy):
             return "sell"
         else: 
             return "hold"
-
-    

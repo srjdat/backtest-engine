@@ -12,5 +12,12 @@ class Strategy(ABC):
         return ""
     
     @abstractmethod 
-    def generate_shares(self, df: pd.DataFrame, portfolio: Portfolio, stock_price: float) -> int: 
+    def generate_buy_shares(self, df: pd.DataFrame, portfolio: Portfolio, stock_price: float) -> int: 
         return 0
+    
+    @abstractmethod
+    def generate_sell_shares(self, df: pd.DataFrame, portfolio: Portfolio, stock_price: float) -> int: 
+        # return 80 percent of all the shares you have
+        shares = int(portfolio.shares * .8)
+
+        return shares

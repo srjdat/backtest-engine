@@ -24,7 +24,7 @@ class Engine:
 
             # add onto data so far 
             self.data_so_far = self.df[0: int(row['pos']) + 1] # have to turn row['pos'] + 1 into an int because it is a float here
-            self.data_so_far = self.data_so_far.drop('Tomorrow Open', axis=1)            
+            self.data_so_far = self.data_so_far.drop('Tomorrow Open', axis=1) 
 
             # call the strategy to receive the signal
             signal = self.strategy.generate_signal(self.data_so_far)
@@ -32,29 +32,39 @@ class Engine:
                 # we send up until today's close price to get a signal and if it's a buy signal we buy when the market opens tomorrow hence row['Open']
                 if not pd.isna(row['Tomorrow Open']):
                     entry_price = row['Tomorrow Open'] # get tomorrow's open to buy
-                    shares = self.strategy.generate_shares(df=self.data_so_far, portfolio=self.portfolio, stock_price=entry_price)
+                    shares = self.strategy.generate_buy_shares(df=self.data_so_far, portfolio=self.portfolio, stock_price=entry_price)
                     shares = self.portfolio.buy(entry_price=entry_price, shares=shares) # this method returns how many shares we actually bought depending on if we had to change the amount
-                    self.trade_log.append((entry_price, shares, "buy", index.strftime('%Y-%m-%d'))) # type: ignore #  add to log as buy
+
+                    # check if the shares is 0 or not
+                    if shares > 0: 
+                        self.trade_log.append((entry_price, shares, "buy", index.strftime('%Y-%m-%d'))) # type: ignore #  add to log as buy
+                    else: 
+                        pass # if shares is 0 or less than 0 then don't do anything 
                 else:
                     pass
 
-                print(f"buy: shares {self.portfolio.shares} cash {self.portfolio.cash}")
+                # print(f"buy: shares {self.portfolio.shares} cash {self.portfolio.cash}")
 
             elif signal == "sell" and self.portfolio.shares > 0: 
                 # today after the market closes we get a signal based on everything so far. so when we eventually sell it's going to be tomorrow's open price that we sell at
                 if not pd.isna(row['Tomorrow Open']): 
                     # how many shares we're selling 
-                    sell_shares = max(1, int(self.portfolio.shares * .5)) # current 80 percent will make something better (risk management)
+                    sell_shares = max(1, int(self.portfolio.shares * .5)) # currently this makes it sell only 80% i'll find a better way to calculate this later 
 
-                    exit_price = row['Tomorrow Open'] # get tomorrow open to sell it at
-                    self.trade_log.append((exit_price, sell_shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell
-                    pnl = self.portfolio.sell(exit_price=exit_price, shares=sell_shares)
-                    self.pnl_list.append((pnl, row['pos']))
+                    exit_price = row['Tomorrow Open'] # get tomorrow open to sell it at 
+                    self.trade_log.append((exit_price, sell_shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell 
+                    pnl = self.portfolio.sell(exit_price=exit_price, shares=sell_shares) 
+                    self.pnl_list.append((pnl, row['pos'])) 
                 else: 
-                    pass
+                    pass 
 
-                print(f"sell: shares {self.portfolio.shares} cash {self.portfolio.cash}")
+                # print(f"sell: shares {self.portfolio.shares} cash {self.portfolio.cash}")
 
+
+        # at the end just sell everything
+        pnl = self.portfolio.sell(exit_price=self.df['Close'].iloc[-1], shares=self.portfolio.shares)
+        self.trade_log.append((exit_price, sell_shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell 
+        self.pnl_list.append((pnl, self.df['pos'].iloc[-1]))
 
         # at the end of the run function call the output function which will output all the things 
         self.output()
