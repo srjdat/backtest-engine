@@ -12,7 +12,7 @@ from strategy.rsi import RSI
 
 
 ticker = 'AAPL'
-start_date = '2022-01-01'
+start_date = '2023-01-01'
 end_date = '2026-07-17'
 
 # start from a year back so we can have 52 week high low and other stuff already loaded in

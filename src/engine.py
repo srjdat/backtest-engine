@@ -54,7 +54,7 @@ class Engine:
                     exit_price = row['Tomorrow Open'] # get tomorrow open to sell it at 
                     self.trade_log.append((exit_price, sell_shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell 
                     pnl = self.portfolio.sell(exit_price=exit_price, user_shares=sell_shares) 
-                    self.pnl_list.append((pnl, row['pos'])) 
+                    self.pnl_list.append((pnl, index.strftime('%Y-%m-%d'))) # type: ignore
                 else: 
                     pass 
 
@@ -65,7 +65,7 @@ class Engine:
         exit_price = self.df['Close'].iloc[-1] # get last close price and sell everything 
         self.trade_log.append((exit_price, self.portfolio.total_shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell 
         pnl = self.portfolio.sell(exit_price=self.df['Close'].iloc[-1], user_shares=self.portfolio.total_shares)
-        self.pnl_list.append((pnl, self.df['pos'].iloc[-1]))
+        self.pnl_list.append((pnl, self.df.index[-1].strftime('%Y-%m-%d')))
 
         # at the end of the run function call the output function which will output all the things 
         self.output()
@@ -78,9 +78,6 @@ class Engine:
             print(item)
         print("trade log")
         for item in self.trade_log: 
-            print(item)
-        print("shares with entry prices")
-        for item in self.portfolio.shares: 
             print(item)
         print(f"cash {round(self.portfolio.cash, 4)}")
         print(f"equity {round (self.portfolio.equity, 4)}")
