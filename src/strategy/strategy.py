@@ -18,6 +18,6 @@ class Strategy(ABC):
     @abstractmethod
     def generate_sell_shares(self, df: pd.DataFrame, portfolio: Portfolio, stock_price: float) -> int: 
         # return 80 percent of all the shares you have
-        shares = int(portfolio.shares * .8)
+        shares = int(portfolio.total_shares * .8)
 
         return shares

@@ -28,12 +28,12 @@ class Engine:
 
             # call the strategy to receive the signal
             signal = self.strategy.generate_signal(self.data_so_far)
-            if signal == "buy": 
+            if signal == "buy" and self.portfolio.cash > 0: 
                 # we send up until today's close price to get a signal and if it's a buy signal we buy when the market opens tomorrow hence row['Open']
                 if not pd.isna(row['Tomorrow Open']):
                     entry_price = row['Tomorrow Open'] # get tomorrow's open to buy
                     shares = self.strategy.generate_buy_shares(df=self.data_so_far, portfolio=self.portfolio, stock_price=entry_price)
-                    shares = self.portfolio.buy(entry_price=entry_price, shares=shares) # this method returns how many shares we actually bought depending on if we had to change the amount
+                    shares = self.portfolio.buy(entry_price=entry_price, user_shares=shares) # this method returns how many shares we actually bought depending on if we had to change the amount
 
                     # check if the shares is 0 or not
                     if shares > 0: 
@@ -45,15 +45,15 @@ class Engine:
 
                 # print(f"buy: shares {self.portfolio.shares} cash {self.portfolio.cash}")
 
-            elif signal == "sell" and self.portfolio.shares > 0: 
+            elif signal == "sell" and self.portfolio.total_shares > 0: # make sure you have shares to sell
                 # today after the market closes we get a signal based on everything so far. so when we eventually sell it's going to be tomorrow's open price that we sell at
                 if not pd.isna(row['Tomorrow Open']): 
                     # how many shares we're selling 
-                    sell_shares = max(1, int(self.portfolio.shares * .5)) # currently this makes it sell only 80% i'll find a better way to calculate this later 
+                    sell_shares = max(1, int(self.portfolio.total_shares * .5)) # currently this makes it sell only 50% i'll find a better way to calculate this later 
 
                     exit_price = row['Tomorrow Open'] # get tomorrow open to sell it at 
                     self.trade_log.append((exit_price, sell_shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell 
-                    pnl = self.portfolio.sell(exit_price=exit_price, shares=sell_shares) 
+                    pnl = self.portfolio.sell(exit_price=exit_price, user_shares=sell_shares) 
                     self.pnl_list.append((pnl, row['pos'])) 
                 else: 
                     pass 
@@ -61,9 +61,10 @@ class Engine:
                 # print(f"sell: shares {self.portfolio.shares} cash {self.portfolio.cash}")
 
 
-        # at the end just sell everything
-        pnl = self.portfolio.sell(exit_price=self.df['Close'].iloc[-1], shares=self.portfolio.shares)
-        self.trade_log.append((exit_price, sell_shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell 
+        # at the end just sell everything (this is for seeing how much cash i gain at the end)
+        exit_price = self.df['Close'].iloc[-1] # get last close price and sell everything 
+        self.trade_log.append((exit_price, self.portfolio.total_shares, "sell", index.strftime('%Y-%m-%d'))) # type: ignore # add to log as sell 
+        pnl = self.portfolio.sell(exit_price=self.df['Close'].iloc[-1], user_shares=self.portfolio.total_shares)
         self.pnl_list.append((pnl, self.df['pos'].iloc[-1]))
 
         # at the end of the run function call the output function which will output all the things 
@@ -72,10 +73,16 @@ class Engine:
     def output(self): 
         np.set_printoptions(legacy='1.25') # so it outputs the number instead of np.float64(x)
 
+        print('pnl list')
+        for item in self.pnl_list: 
+            print(item)
         print("trade log")
         for item in self.trade_log: 
             print(item)
+        print("shares with entry prices")
+        for item in self.portfolio.shares: 
+            print(item)
         print(f"cash {round(self.portfolio.cash, 4)}")
         print(f"equity {round (self.portfolio.equity, 4)}")
-        print(f"shares {round(self.portfolio.shares, 4)}")
+        print(f"shares {round(self.portfolio.total_shares, 4)}")
         print(f"pnl {round(self.portfolio.pnl, 4)}")
