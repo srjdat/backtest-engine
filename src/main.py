@@ -105,7 +105,7 @@ df['one_year_window'] = (df['Close'] - df['Close'].shift(252)) / df['Close'].shi
 # make df only from start date to end date
 df = df.iloc[250:len(df)]
 
-s1 = SMA_Crossover()
-p1 = Portfolio(15000)
-e1 = Engine(df=df, strategy=s1, portfolio=p1)
+s1 = SMA_Crossover() # strategy
+p1 = Portfolio(15000) # portfolio
+e1 = Engine(df=df, strategy=s1, portfolio=p1) # engine
 e1.run()
