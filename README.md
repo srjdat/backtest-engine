@@ -1,5 +1,5 @@
 ## Backtesting Engine
-This is the second part to finance-trader (my other project). This project allows the user to test strategies they have developed or are testing. There is a base strategy class which is used to return a "buy", "sell", or "hold" signal alongside how many shares to buy or sell.
+This is the second part to finance-trader. This project allows the user to test strategies they have developed or are testing. There is a base strategy class which is used to return a "buy", "sell", or "hold" signal alongside how many shares to buy or sell.
 
 ### How to run
 1. Clone the repo and create a virtual environment using `python3 -m venv venv` then `source venv/bin/activate`
